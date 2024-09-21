@@ -1,0 +1,174 @@
+import tkinter as tk
+from tkinter import messagebox
+import matplotlib.pyplot as plt
+
+# calcular juros compostos
+def calcular_juros_compostos():
+    try:
+        principal = float(entry_principal.get())
+        taxa = float(entry_taxa.get()) / 100  # porcentagem para decimal
+        tempo = float(entry_tempo.get())
+        comp_anual = int(entry_comp_anual.get())
+        
+        montante = principal * (1 + (taxa / comp_anual))**(comp_anual * tempo)
+        resultado_label.config(text=f"Montante após {tempo} anos: R$ {montante:.2f}")
+    except ValueError:
+        messagebox.showerror("Erro", "Por favor, insira valores válidos.")
+
+#  calcular prestação de empréstimo
+def calcular_prestacao_emprestimo():
+    try:
+        valor_emprestimo = float(entry_valor_emprestimo.get())
+        taxa_juros = float(entry_taxa_juros.get()) / 100 / 12  #  taxa anual para mensal
+        meses = int(entry_meses.get())
+        
+        prestacao = (valor_emprestimo * taxa_juros * (1 + taxa_juros)**meses) / ((1 + taxa_juros)**meses - 1)
+        resultado_label.config(text=f"Prestação Mensal: R$ {prestacao:.2f}")
+    except ValueError:
+        messagebox.showerror("Erro", "Por favor, insira valores válidos.")
+
+#  calcular o saldo final no planejamento de orçamento
+def planejar_orcamento():
+    try:
+        receitas = float(entry_receitas.get())
+        despesas = float(entry_despesas.get())
+        saldo = receitas - despesas
+        resultado_label.config(text=f"Saldo Final: R$ {saldo:.2f}")
+    except ValueError:
+        messagebox.showerror("Erro", "Por favor, insira valores válidos.")
+
+#  calcular ROI (retorno sobre investimento)
+def calcular_roi():
+    try:
+        ganho = float(entry_ganho.get())
+        investimento = float(entry_investimento.get())
+        
+        roi = (ganho - investimento) / investimento * 100
+        resultado_label.config(text=f"ROI: {roi:.2f}%")
+    except ValueError:
+        messagebox.showerror("Erro", "Por favor, insira valores válidos.")
+
+#  mostrar a tabela de amortização de empréstimo
+import matplotlib.pyplot as plt
+
+def mostrar_amortizacao():
+    try:
+        valor_emprestimo = float(entry_valor_emprestimo.get())
+        taxa_juros = float(entry_taxa_juros.get()) / 100 / 12  # Taxa mensal
+        meses = int(entry_meses.get())
+
+        # cálculo da prestação
+        prestacao = (valor_emprestimo * taxa_juros * (1 + taxa_juros)**meses) / ((1 + taxa_juros)**meses - 1)
+        
+        saldo_devedor = valor_emprestimo
+        saldos = []
+        for i in range(1, meses + 1):
+            juros = saldo_devedor * taxa_juros
+            amortizacao = prestacao - juros
+            saldo_devedor -= amortizacao
+            saldos.append(saldo_devedor)
+
+        #  gráfico
+        plt.figure(figsize=(10, 6))
+        plt.plot(range(1, meses + 1), saldos, marker='o', linestyle='-', color='royalblue', label='Saldo Devedor')
+        plt.title('Amortização do Empréstimo', fontsize=16, fontweight='bold')
+        plt.xlabel('Mês', fontsize=14)
+        plt.ylabel('Saldo Devedor (R$)', fontsize=14)
+        plt.xticks(range(1, meses + 1))  # Rótulos nos meses
+        plt.yticks(rotation=45)
+        plt.grid(which='both', linestyle='--', linewidth=0.7, alpha=0.7)
+        plt.axhline(0, color='black', linewidth=0.8, ls='--')
+        plt.fill_between(range(1, meses + 1), saldos, color='lightblue', alpha=0.3)  # Área sob a curva
+        plt.legend(fontsize=12)
+
+        # mostrar gráfico
+        plt.tight_layout()
+        plt.show()
+    except ValueError as e:
+        print(e)  #   erro para depuração
+        messagebox.showerror("Erro", "Por favor, insira valores válidos.")
+
+#  janela principal
+window = tk.Tk()
+window.title("Calculadora Financeira Completa")
+window.geometry("400x600")
+
+# juros Compostos
+frame_juros = tk.Frame(window)
+frame_juros.pack(pady=10)
+
+tk.Label(frame_juros, text="Juros Compostos", font=('Arial', 12, 'bold')).grid(row=0, column=0, columnspan=2)
+tk.Label(frame_juros, text="Principal (P):").grid(row=1, column=0)
+entry_principal = tk.Entry(frame_juros)
+entry_principal.grid(row=1, column=1)
+
+tk.Label(frame_juros, text="Taxa de Juros (%):").grid(row=2, column=0)
+entry_taxa = tk.Entry(frame_juros)
+entry_taxa.grid(row=2, column=1)
+
+tk.Label(frame_juros, text="Tempo (anos):").grid(row=3, column=0)
+entry_tempo = tk.Entry(frame_juros)
+entry_tempo.grid(row=3, column=1)
+
+tk.Label(frame_juros, text="Comp./Ano (n):").grid(row=4, column=0)
+entry_comp_anual = tk.Entry(frame_juros)
+entry_comp_anual.grid(row=4, column=1)
+
+tk.Button(frame_juros, text="Calcular Juros Compostos", command=calcular_juros_compostos).grid(row=5, column=0, columnspan=2)
+
+#  prestação de Empréstimo
+frame_emprestimo = tk.Frame(window)
+frame_emprestimo.pack(pady=10)
+
+tk.Label(frame_emprestimo, text="Prestação de Empréstimo", font=('Arial', 12, 'bold')).grid(row=0, column=0, columnspan=2)
+tk.Label(frame_emprestimo, text="Valor do Empréstimo:").grid(row=1, column=0)
+entry_valor_emprestimo = tk.Entry(frame_emprestimo)
+entry_valor_emprestimo.grid(row=1, column=1)
+
+tk.Label(frame_emprestimo, text="Taxa de Juros Anual (%):").grid(row=2, column=0)
+entry_taxa_juros = tk.Entry(frame_emprestimo)
+entry_taxa_juros.grid(row=2, column=1)
+
+tk.Label(frame_emprestimo, text="Número de Meses:").grid(row=3, column=0)
+entry_meses = tk.Entry(frame_emprestimo)
+entry_meses.grid(row=3, column=1)
+
+tk.Button(frame_emprestimo, text="Calcular Prestação", command=calcular_prestacao_emprestimo).grid(row=4, column=0, columnspan=2)
+tk.Button(frame_emprestimo, text="Mostrar Amortização", command=mostrar_amortizacao).grid(row=5, column=0, columnspan=2)
+
+# planejamento de Orçamento
+frame_orcamento = tk.Frame(window)
+frame_orcamento.pack(pady=10)
+
+tk.Label(frame_orcamento, text="Planejamento de Orçamento", font=('Arial', 12, 'bold')).grid(row=0, column=0, columnspan=2)
+tk.Label(frame_orcamento, text="Receitas Totais:").grid(row=1, column=0)
+entry_receitas = tk.Entry(frame_orcamento)
+entry_receitas.grid(row=1, column=1)
+
+tk.Label(frame_orcamento, text="Despesas Totais:").grid(row=2, column=0)
+entry_despesas = tk.Entry(frame_orcamento)
+entry_despesas.grid(row=2, column=1)
+
+tk.Button(frame_orcamento, text="Calcular Saldo", command=planejar_orcamento).grid(row=3, column=0, columnspan=2)
+
+# seção de ROI
+frame_roi = tk.Frame(window)
+frame_roi.pack(pady=10)
+
+tk.Label(frame_roi, text="Retorno sobre Investimento (ROI)", font=('Arial', 12, 'bold')).grid(row=0, column=0, columnspan=2)
+tk.Label(frame_roi, text="Ganho:").grid(row=1, column=0)
+entry_ganho = tk.Entry(frame_roi)
+entry_ganho.grid(row=1, column=1)
+
+tk.Label(frame_roi, text="Investimento:").grid(row=2, column=0)
+entry_investimento = tk.Entry(frame_roi)
+entry_investimento.grid(row=2, column=1)
+
+tk.Button(frame_roi, text="Calcular ROI", command=calcular_roi).grid(row=3, column=0, columnspan=2)
+
+# label de resultados
+resultado_label = tk.Label(window, text="", font=('Arial', 12))
+resultado_label.pack(pady=20)
+
+# executar o loop da janela
+window.mainloop()
